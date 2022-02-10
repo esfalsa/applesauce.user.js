@@ -1,12 +1,16 @@
 // ==UserScript==
 // @name        Applesauce
-// @namespace   Violentmonkey Scripts
+// @namespace   https://nationstates.net/esfalsa
+// @icon				https://www.nationstates.net/favicon.ico
 // @match       https://www.nationstates.net/template-overall=none/page=blank/x-applesauce=endo
 // @grant       none
-// @version     1.0
-// @author      -
-// @description 2/9/2022, 12:59:22 AM
+// @version     0.1.0
+// @author      Pronoun
+// @description A simple endorsement tool.
 // @require     https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
+// @downloadURL	https://github.com/esfalsa/applesauce/blob/main/applesauce.user.js?raw=1
+// @supportURL	https://github.com/esfalsa/applesauce/issues
+// @homepageURL	https://github.com/esfalsa/applesauce
 // ==/UserScript==
 
 document.title = "NationStates | Applesauce";
