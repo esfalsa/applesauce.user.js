@@ -4,7 +4,7 @@
 // @icon				https://www.nationstates.net/favicon.ico
 // @match       https://www.nationstates.net/template-overall=none/page=blank/x-applesauce=endo
 // @grant       none
-// @version     0.1.0
+// @version     0.1.1
 // @author      Pronoun
 // @description A simple endorsement tool.
 // @require     https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
@@ -79,8 +79,8 @@ function background_endorse(nation, localid) {
 	var options = {
 		complete: function (xhr, status) {
 			$("button#endorse").prop("disabled", false);
+			nations.shift();
 			if (xhr.responseText.match(/(?<=<p class="error">\n).*(?=\n<p>)/gms)) {
-				nations.shift();
 				show_error(
 					`Error endorsing ${nation}: ${xhr.responseText.match(
 						/(?<=<p class="error">\n).*(?=\n<p>)/gms
