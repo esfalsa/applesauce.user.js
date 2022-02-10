@@ -4,7 +4,7 @@
 // @icon				https://www.nationstates.net/favicon.ico
 // @match       https://www.nationstates.net/template-overall=none/page=blank/x-applesauce=endo
 // @grant       none
-// @version     0.1.1
+// @version     0.2.0
 // @author      Pronoun
 // @description A simple endorsement tool.
 // @require     https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
@@ -17,42 +17,37 @@ document.title = "NationStates | Applesauce";
 
 let head = document.querySelector("head");
 
-let normalize = document.createElement("link");
-normalize.rel = "stylesheet";
-normalize.href =
-	"https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css";
-head.appendChild(normalize);
+let water = document.createElement("link");
+water.rel = "stylesheet";
+water.href = "https://cdn.jsdelivr.net/npm/water.css@2.1.1/out/water.min.css";
+head.appendChild(water);
 
-let style = document.createElement("style");
-style.innerHTML = `
-	body {
-		font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-	}
-`;
-head.appendChild(style);
+var viewport = document.createElement("meta");
+viewport.name = "viewport";
+viewport.content = "width=device-width, initial-scale=1.0";
+head.appendChild(viewport);
 
 document.querySelector("body").innerHTML = `
   <div>
     <h1>Applesauce</h1>
     <h3>A simple endorsement tool.</h3>
   
-    <p>
-      <input type="text" id="separator" placeholder="Separator"></input>
-    </p>
+		<hr>
 
-    <p>
-      <input type="text" id="localid" placeholder="localid" autocomplete="off"></input>
-    </p>
+		<label for="separator">Separator</label>
+		<input type="text" id="separator" placeholder=", ">
+			
+		<label for="localid">Local ID</label>
+		<input type="text" id="localid" placeholder="bLamBNjfLF83O" autocomplete="off">
   
-    <p>
-      <textarea id="input" placeholder="Nations"></textarea>
-    </p>
+		<label for="input">Nations</label>
+    <textarea id="input" placeholder="PenguinPies, Tepertopia, Auphelia, Concrete Slab, 073 039 109 032 080 111 112 112 121, Aidenfieeld, Beepee, Ebonhand, Purple Hyacinth, Land Without Shrimp, Holy Free, Amerion, Tsunamy, Farengeto"></textarea>
 
     <button id="submit">Submit</button>
 
     <button id="endorse" disabled>Endorse Next</button>
 
-		<div id="log"></div>
+		<div><pre style="overflow:hidden;overflow-y:auto;max-height:10em;"><code id="log"></code></pre></div>
   </div>
 `;
 
@@ -72,17 +67,17 @@ document.querySelector("#submit").addEventListener("click", () => {
 });
 
 document.querySelector("#endorse").addEventListener("click", () => {
-	background_endorse(nations[0], localid);
+	endorse(nations[0], localid);
 });
 
-function background_endorse(nation, localid) {
-	var options = {
+function endorse(nation, localid) {
+	let options = {
 		complete: function (xhr, status) {
 			$("button#endorse").prop("disabled", false);
 			nations.shift();
 			if (xhr.responseText.match(/(?<=<p class="error">\n).*(?=\n<p>)/gms)) {
 				show_error(
-					`Error endorsing ${nation}: ${xhr.responseText.match(
+					`err: ${nation}: ${xhr.responseText.match(
 						/(?<=<p class="error">\n).*(?=\n<p>)/gms
 					)}`
 				);
@@ -100,5 +95,5 @@ function background_endorse(nation, localid) {
 }
 
 function show_error(error) {
-	$("#log").prepend(`<p>${error}</p>`);
+	$("#log").prepend(`${error}<br>`);
 }
