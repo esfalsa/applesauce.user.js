@@ -4,7 +4,7 @@
 // @icon				https://www.nationstates.net/favicon.ico
 // @match       https://www.nationstates.net/template-overall=none/page=blank/x-applesauce=endo
 // @grant       none
-// @version     0.4.0
+// @version     0.5.0
 // @author      Pronoun
 // @description A simple endorsement tool.
 // @downloadURL	https://github.com/esfalsa/applesauce/blob/main/applesauce.user.js?raw=1
@@ -79,13 +79,14 @@ document.body.innerHTML = /*html*/ `
 			</div>
 		</div>
 	
-		<label for="input">Nations</label>
-		<textarea id="input" rows="4"
+		<label for="nations">Nations</label>
+		<textarea id="nations" rows="4"
 			placeholder="PenguinPies, Tepertopia, Auphelia, Concrete Slab, 073 039 109 032 080 111 112 112 121, Aidenfieeld, Beepee, Ebonhand, Purple Hyacinth, Land Without Shrimp, Holy Free, Amerion, Tsunamy, Farengeto"></textarea>
 	
 		<p>
 			<button id="submit">Submit</button>
 			<button id="endorse" disabled>Endorse Next</button>
+			<small><a id="save">Copy link to current progress</a></small>
 		</p>
 	
 		<div>
@@ -108,26 +109,17 @@ document.body.innerHTML = /*html*/ `
 
 let nations;
 let localid;
+let separator;
 
-setLocalId();
+readSearchParams();
 
-document.querySelector("#submit").addEventListener("click", () => {
-	let input = document.getElementById("input").value;
-	localid = document.getElementById("localid").value;
-	let separator = document.getElementById("separator").value;
-
-	nations = input.split(separator).map((item) => item.trim());
-
-	document.getElementById("endorse").disabled = false;
-
-	log("success", `Loaded ${nations.length} nations.`);
-});
+document.querySelector("#submit").addEventListener("click", loadInput);
 
 document.querySelector("#endorse").addEventListener("click", () => {
 	if (nations[0]) {
 		endorse(nations[0], localid);
 	} else {
-		log("info", `Endorsements completed.`);
+		completeEndorsements();
 	}
 });
 
@@ -136,6 +128,8 @@ document.querySelector("#refresh").addEventListener("click", (e) => {
 	document.querySelector("#refresh").classList.add("disabled");
 	setLocalId();
 });
+
+document.querySelector("#save").addEventListener("click", saveProgress);
 
 function endorse(nation, localid) {
 	document.querySelector("#endorse").disabled = true;
@@ -159,7 +153,7 @@ function endorse(nation, localid) {
 				log("success", `${nation}`);
 			}
 			if (!nations[0]) {
-				log("info", `Endorsements completed.`);
+				completeEndorsements();
 			}
 		});
 }
@@ -174,7 +168,7 @@ function log(type, text) {
 	document.getElementById("log").prepend(label);
 }
 
-function setLocalId() {
+function setLocalId(submit) {
 	fetch("https://www.nationstates.net/template-overall=none/page=settings")
 		.then((response) => response.text())
 		.then((text) => {
@@ -183,5 +177,56 @@ function setLocalId() {
 			);
 			document.querySelector("#refresh").classList.remove("disabled");
 			log("success", `Fetched localid.`);
+			if (submit) {
+				loadInput();
+			}
 		});
+}
+
+function readSearchParams() {
+	let params = new URL(document.location).searchParams;
+	if (params.get("separator")) {
+		document.querySelector("#separator").value = params.get("separator");
+	}
+	if (params.getAll("nations")) {
+		document.querySelector("#nations").value = params.getAll("nations");
+	}
+	setLocalId(params.has("separator") && params.has("nations"));
+}
+
+function loadInput() {
+	let input = document.getElementById("nations").value;
+	localid = document.getElementById("localid").value;
+	separator = document.getElementById("separator").value;
+
+	nations = input.split(separator).map((item) => item.trim());
+
+	document.getElementById("endorse").disabled = false;
+
+	log("success", `Loaded ${nations.length} nations.`);
+}
+
+function saveProgress() {
+	document.querySelector("#save").classList.add("disabled");
+	let url = new URL(document.location.origin + document.location.pathname);
+	if (separator) {
+		url.searchParams.append("separator", separator);
+	}
+	if (nations && nations[0]) {
+		url.searchParams.append("nations", nations);
+	}
+	navigator.clipboard.writeText(url).then(() => {
+		document.querySelector("#save").textContent = "Copied!";
+		setTimeout(() => {
+			document.querySelector("#save").textContent =
+				"Copy link to current progress";
+			document.querySelector("#save").classList.remove("disabled");
+		}, 1250);
+	});
+}
+
+function completeEndorsements() {
+	log("info", `Endorsements completed.`);
+	document.querySelector("#endorse").disabled = true;
+	nations = localid = separator = undefined;
 }
