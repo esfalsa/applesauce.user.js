@@ -1,3 +1,9 @@
+**⚠️ This repository is now archived.**
+
+All code contained in this repository remains fully open-source but is no longer being maintained.
+
+---
+
 # Applesauce
 
 Applesauce is a simple endorsement tool for NationStates. It takes a list of nations, and gives you an endorse button to click to your heart's content as you go down the list.
